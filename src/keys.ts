@@ -1,28 +1,8 @@
-import { CreateKeyOptions, KeyResponse, Key, KeyResponseObj } from "./types";
-import { ReadStream } from "fs";
+import { _request } from "./httpRequest";
+import { CreateKeyOptions, KeyResponse, Key } from "./types";
 
 export class Keys {
-  constructor(
-    private _credentials: string,
-    private _apiUrl: string,
-    private _request:
-      | ((
-          method: string,
-          api_key: string,
-          apiUrl: string,
-          path: string,
-          payload?: string | Buffer | ReadStream,
-          // eslint-disable-next-line @typescript-eslint/ban-types
-          options?: Object
-        ) => Promise<any>)
-      | ((
-          method: string,
-          api_key: string,
-          apiUrl: string,
-          path: string,
-          payload?: string
-        ) => Promise<any>)
-  ) {}
+  constructor(private _credentials: string, private _apiUrl: string) { }
 
   private apiPath = "/v1/projects";
 
@@ -31,18 +11,18 @@ export class Keys {
    * @param projectId Unique identifier of the project containing API keys
    */
   async list(projectId: string): Promise<KeyResponse> {
-    const response = await this._request(
+    const response = await _request<KeyResponse>(
       "GET",
       this._credentials,
       this._apiUrl,
       `${this.apiPath}/${projectId}/keys`
     );
 
-    const output = response.api_keys.map((apiKey: KeyResponseObj) => {
+    const output = response.api_keys.map((apiKey) => {
       return {
         ...apiKey,
-        ...apiKey.api_key,
-      };
+        ...apiKey.api_key
+      }
     });
 
     return { api_keys: output };
@@ -54,7 +34,7 @@ export class Keys {
    * @param keyId Unique identifier for the key to retrieve
    */
   async get(projectId: string, keyId: string): Promise<Key> {
-    return this._request(
+    return _request<Key>(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -86,7 +66,7 @@ export class Keys {
       );
     }
 
-    return this._request(
+    return _request<Key>(
       "POST",
       this._credentials,
       this._apiUrl,
@@ -110,7 +90,7 @@ export class Keys {
    * @param keyId Unique identifier for the key to delete
    */
   async delete(projectId: string, keyId: string): Promise<void> {
-    return this._request(
+    return _request<void>(
       "DELETE",
       this._credentials,
       this._apiUrl,

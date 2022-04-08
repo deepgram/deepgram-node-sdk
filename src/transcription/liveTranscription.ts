@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import querystring from "querystring";
-import WebSocket from "ws";
+import WebSocket from "isomorphic-ws";
 import { ConnectionState, LiveTranscriptionEvents } from "../enums";
 import { LiveTranscriptionOptions } from "../types";
 import { userAgent } from "../userAgent";

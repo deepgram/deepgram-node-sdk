@@ -9,7 +9,6 @@ import { Billing } from "./billing";
 import { Scopes } from "./scopes";
 
 import { validateOptions } from "./helpers";
-import { _request } from "./httpRequest";
 
 export class Deepgram {
   private _apiUrl: string;
@@ -28,13 +27,10 @@ export class Deepgram {
     this._apiKey = apiKey;
     this._apiUrl = apiUrl || DefaultOptions.apiUrl;
 
-    /**
-     * Ensures that the provided options were provided
-     */
     validateOptions(this._apiKey, this._apiUrl);
 
-    this.keys = new Keys(this._apiKey, this._apiUrl, _request);
-    this.projects = new Projects(this._apiKey, this._apiUrl, _request);
+    this.keys = new Keys(this._apiKey, this._apiUrl);
+    this.projects = new Projects(this._apiKey, this._apiUrl);
     this.transcription = new Transcriber(this._apiKey, this._apiUrl);
     this.usage = new Usage(this._apiKey, this._apiUrl);
     this.members = new Members(this._apiKey, this._apiUrl);

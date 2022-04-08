@@ -1,33 +1,8 @@
-import { ReadStream } from "fs";
-import {
-  Project,
-  ProjectPatchResponse,
-  ProjectResponse,
-  ProjectPatchRequest,
-} from "./types";
+import { _request } from "./httpRequest";
+import { Project, ProjectPatchResponse, ProjectResponse } from "./types";
 
 export class Projects {
-  constructor(
-    private _credentials: string,
-    private _apiUrl: string,
-    private _request:
-      | ((
-          method: string,
-          api_key: string,
-          apiUrl: string,
-          path: string,
-          payload?: string | Buffer | ReadStream,
-          // eslint-disable-next-line @typescript-eslint/ban-types
-          options?: Object
-        ) => Promise<any>)
-      | ((
-          method: string,
-          api_key: string,
-          apiUrl: string,
-          path: string,
-          payload?: string
-        ) => Promise<any>)
-  ) {}
+  constructor(private _credentials: string, private _apiUrl: string) { }
 
   private apiPath = "/v1/projects";
 
@@ -35,7 +10,12 @@ export class Projects {
    * Returns all projects accessible by the API key
    */
   async list(): Promise<ProjectResponse> {
-    return this._request("GET", this._credentials, this._apiUrl, this.apiPath);
+    return _request<ProjectResponse>(
+      "GET",
+      this._credentials,
+      this._apiUrl,
+      this.apiPath
+    );
   }
 
   /**
@@ -43,7 +23,7 @@ export class Projects {
    * @param projectId Unique identifier of the project to retrieve
    */
   async get(projectId: string): Promise<Project> {
-    return this._request(
+    return _request<Project>(
       "GET",
       this._credentials,
       this._apiUrl,
@@ -55,16 +35,12 @@ export class Projects {
    * Update a specific project
    * @param project project to update
    */
-  async update(
-    project: Project,
-    payload: ProjectPatchRequest
-  ): Promise<ProjectPatchResponse> {
-    return this._request(
+  async update(project: Project): Promise<ProjectPatchResponse> {
+    return _request<ProjectPatchResponse>(
       "PATCH",
       this._credentials,
       this._apiUrl,
-      `${this.apiPath}/${project.project_id}`,
-      JSON.stringify(payload)
+      `${this.apiPath}/${project.project_id}`
     );
   }
 }
